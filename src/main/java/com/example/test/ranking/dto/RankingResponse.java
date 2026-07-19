@@ -8,7 +8,8 @@ import lombok.Getter;
 public class RankingResponse {
 
     private int rank;
-    private String ghostType;
+    private String ghostName;
+    private String description;
     private long count;
     private double percent;
 }
