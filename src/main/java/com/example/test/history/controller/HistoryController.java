@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.example.test.history.dto.ParticipantCountResponse;
 
 @RestController
 @RequestMapping("/api/v1/histories")
@@ -34,6 +35,16 @@ public class HistoryController {
     public ResponseEntity<HistoryResponse> getHistoryDetail(@PathVariable("id") Long id) {
         HistoryResponse response = historyService.getHistoryDetail(id);
         // 명세서 상의 200 OK 응답 코드로 데이터를 반환합니다.
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 3. 전체 참여자 수 조회
+     * Method / URL: GET /api/v1/histories/participant-count
+     */
+    @GetMapping("/participant-count")
+    public ResponseEntity<ParticipantCountResponse> getParticipantCount() {
+        ParticipantCountResponse response = historyService.getParticipantCount();
         return ResponseEntity.ok(response);
     }
 }
