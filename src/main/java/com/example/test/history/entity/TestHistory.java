@@ -1,4 +1,4 @@
-package com.example.test.entity;
+package com.example.test.history.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
