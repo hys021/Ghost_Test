@@ -10,6 +10,7 @@ import com.example.test.ranking.dto.RankingListResponse;
 import com.example.test.ranking.service.RankingService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
+import com.example.test.ranking.dto.SchoolRankingResponse;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -30,7 +31,7 @@ public class SchoolController {
     }
 
     @GetMapping("/schools/{schoolId}/rankings")
-    public ResponseEntity<RankingListResponse> getSchoolRanking(
+    public ResponseEntity<SchoolRankingResponse> getSchoolRanking(
             @PathVariable Long schoolId) {
 
         return ResponseEntity.ok(rankingService.getSchoolRanking(schoolId));

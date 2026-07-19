@@ -8,6 +8,12 @@ import com.example.test.ranking.dto.RankingResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.example.test.school.entity.School;
+import com.example.test.school.repository.SchoolRepository;
+import com.example.test.ranking.dto.SchoolRankingResponse;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +25,7 @@ public class RankingService {
 
     private final TestHistoryRepository testHistoryRepository;
     private final GhostRepository ghostRepository;
+    private final SchoolRepository schoolRepository;
 
     public RankingListResponse getRanking() {
 
@@ -43,7 +50,8 @@ public class RankingService {
 
             rankings.add(new RankingResponse(
                     rank++,
-                    ghost.getGhostType(),
+                    ghost.getName(),
+                    ghost.getDescription(),
                     count,
                     Math.round(percent * 10) / 10.0
             ));
@@ -52,7 +60,7 @@ public class RankingService {
         return new RankingListResponse(participantCount, rankings);
     }
 
-    public RankingListResponse getSchoolRanking(Long schoolId) {
+    public SchoolRankingResponse getSchoolRanking(Long schoolId) {
 
         long participantCount = testHistoryRepository.countBySchoolId(schoolId);
 
@@ -75,12 +83,25 @@ public class RankingService {
 
             rankings.add(new RankingResponse(
                     rank++,
-                    ghost.getGhostType(),
+                    ghost.getName(),
+                    ghost.getDescription(),
                     count,
                     Math.round(percent * 10) / 10.0
             ));
         }
 
-        return new RankingListResponse(participantCount, rankings);
+        School school = schoolRepository.findById(schoolId)
+
+        .orElseThrow(() ->
+                new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "학교를 찾을 수 없습니다."
+                ));
+
+        return new SchoolRankingResponse(
+                school.getName(),
+                participantCount,
+                rankings
+        );
     }
 }
