@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import com.example.test.history.dto.ParticipantCountResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -123,5 +124,10 @@ public class HistoryService {
                 .worstMatch(worstMatchInfo)
                 .createdAt(history.getCreatedAt() != null ? history.getCreatedAt() : LocalDateTime.now())
                 .build();
+    }
+
+    public ParticipantCountResponse getParticipantCount() {
+        long count = testHistoryRepository.count();
+        return new ParticipantCountResponse(count);
     }
 }
