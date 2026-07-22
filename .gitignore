@@ -58,3 +58,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Key file ###
+/src/main/resources/application.properties
