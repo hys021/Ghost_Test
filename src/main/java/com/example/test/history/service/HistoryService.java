@@ -7,13 +7,17 @@ import com.example.test.history.dto.ParticipantCountResponse;
 import com.example.test.history.entity.TestHistory;
 import com.example.test.history.repository.TestHistoryRepository;
 
-// 확정된 Ghost 엔티티 및 레포지토리 패키지 연결
+// Ghost 도메인 연동
 import com.example.test.ghost.entity.Ghost;
 import com.example.test.ghost.repository.GhostRepository;
 
-// 하헌승 님의 School 엔티티 및 레포지토리 연결
+// School 도메인 연동
 import com.example.test.school.entity.School;
 import com.example.test.school.repository.SchoolRepository;
+
+// Story 도메인 연동
+import com.example.test.story.service.ResultCalculationService;
+import com.example.test.story.dto.ResultDto;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,23 +34,20 @@ public class HistoryService {
     private final GhostRepository ghostRepository;
     private final SchoolRepository schoolRepository;
 
-    // TODO: 윤석 님의 MBTI 계산 서비스 합류 시 주석 해제 후 주입
-    // private final GhostCalculatorService ghostCalculatorService;
+    private final ResultCalculationService resultCalculationService;
 
     /**
      * 1. 테스트 최종 결과 계산 및 저장 (POST /api/v1/histories)
      */
     @Transactional
     public HistoryResponse saveHistory(HistorySaveRequest request) {
-        // TODO: 윤석 님의 계산 로직 구현 시 아래 코드로 교체 예정
-        // String mbtiType = ghostCalculatorService.calculateMbti(request.getChoiceIds());
-        String mbtiType = "INFP"; // 임시 기본값
 
-        // 도출된 MBTI 타입으로 실제 도감 데이터 매핑
-        Ghost ghost = ghostRepository.findByMbtiType(mbtiType)
-                .orElseThrow(() -> new IllegalArgumentException("해당 MBTI 유형의 귀신 데이터가 도감에 존재하지 않습니다: " + mbtiType));
+        ResultDto result = resultCalculationService.calculate(request.getChoiceIds());
+        String calculatedMbti = result.getMbti();
 
-        // 테스트 이력 엔티티 빌드 및 실제 MySQL 적재 (0번 또는 null은 선택 안 함으로 안전하게 치환됨)
+        Ghost ghost = ghostRepository.findByMbtiType(calculatedMbti)
+                .orElseThrow(() -> new IllegalArgumentException("해당 MBTI 유형의 귀신 데이터가 도감에 존재하지 않습니다: " + calculatedMbti));
+
         TestHistory testHistory = TestHistory.builder()
                 .schoolId(request.getSchoolId())
                 .ghostId(ghost.getId())
@@ -72,7 +73,7 @@ public class HistoryService {
      */
     private HistoryResponse convertToHistoryResponse(TestHistory history) {
 
-        // 1. School 정보 동적 조회 및 0번/null 예외 처리 (수정 완료)
+        // 1. School 정보 동적 조회 및 0번/Null 예외 방어
         String schoolName = "선택 안 함";
         if (history.getSchoolId() != null && history.getSchoolId() != 0) {
             schoolName = schoolRepository.findById(history.getSchoolId())
@@ -80,11 +81,9 @@ public class HistoryService {
                     .orElse("알 수 없는 학교");
         }
 
-        // 2. 이력에 적재된 ghostId 기반으로 결과 귀신 실시간 매핑
         Ghost ghost = ghostRepository.findById(history.getGhostId())
                 .orElseThrow(() -> new IllegalArgumentException("귀신 도감 정보가 실존하지 않습니다. id=" + history.getGhostId()));
 
-        // 3. 찰떡 궁합(Best Match) 귀신 상세 정보 추적
         MatchInfo bestMatchInfo = null;
         if (ghost.getBestMatchGhostId() != null) {
             Ghost bestGhost = ghostRepository.findById(ghost.getBestMatchGhostId()).orElse(null);
@@ -96,7 +95,6 @@ public class HistoryService {
             }
         }
 
-        // 4. 파멸 궁합(Worst Match) 귀신 상세 정보 추적
         MatchInfo worstMatchInfo = null;
         if (ghost.getWorstMatchGhostId() != null) {
             Ghost worstGhost = ghostRepository.findById(ghost.getWorstMatchGhostId()).orElse(null);
@@ -108,7 +106,6 @@ public class HistoryService {
             }
         }
 
-        // 5. 확정된 실 데이터 기반 DTO 바인딩
         return HistoryResponse.builder()
                 .id(history.getId())
                 .schoolName(schoolName)
