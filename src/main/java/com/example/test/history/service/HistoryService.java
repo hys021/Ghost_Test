@@ -20,8 +20,10 @@ import com.example.test.story.service.ResultCalculationService;
 import com.example.test.story.dto.ResultDto;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 
@@ -63,7 +65,10 @@ public class HistoryService {
      */
     public HistoryResponse getHistoryDetail(Long id) {
         TestHistory testHistory = testHistoryRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 테스트 이력이 존재하지 않습니다. id=" + id));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "해당 테스트 이력이 존재하지 않습니다. id=" + id
+                ));
 
         return convertToHistoryResponse(testHistory);
     }
