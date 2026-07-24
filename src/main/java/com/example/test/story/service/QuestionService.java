@@ -43,6 +43,7 @@ public class QuestionService {
                 question.getId(),
                 question.getContent(),
                 question.getImageUrl(),
+                question.getReactionImageUrl(),
                 choiceResponses
         );
     }

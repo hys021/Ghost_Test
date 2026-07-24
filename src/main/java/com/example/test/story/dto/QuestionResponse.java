@@ -12,5 +12,6 @@ public class QuestionResponse {
     private Long questionId;
     private String content;
     private String imageUrl;
+    private String reactionImageUrl;
     private List<ChoiceResponse> choices;
 }
