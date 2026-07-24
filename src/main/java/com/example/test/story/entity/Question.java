@@ -28,6 +28,9 @@ public class Question {
     @Column(name = "image_url", length = 255)
     private String imageUrl;
 
+    @Column(name = "reaction_image_url", length = 255)
+    private String reactionImageUrl;
+
     @OneToMany(mappedBy = "question")
     private List<Choice> choices = new ArrayList<>();
 }
