@@ -5,6 +5,7 @@ import com.example.test.school.dto.SchoolResponse;
 import com.example.test.school.entity.School;
 import com.example.test.school.repository.SchoolRepository;
 import org.springframework.stereotype.Service;
+import com.example.test.history.repository.TestHistoryRepository;
 
 import java.util.List;
 
@@ -12,9 +13,12 @@ import java.util.List;
 public class SchoolService {
 
     private final SchoolRepository schoolRepository;
+    private final TestHistoryRepository testHistoryRepository;
 
-    public SchoolService(SchoolRepository schoolRepository) {
+    public SchoolService(SchoolRepository schoolRepository,
+                         TestHistoryRepository testHistoryRepository) {
         this.schoolRepository = schoolRepository;
+        this.testHistoryRepository = testHistoryRepository;
     }
 
     public SchoolListResponse searchSchools(String keyword) {

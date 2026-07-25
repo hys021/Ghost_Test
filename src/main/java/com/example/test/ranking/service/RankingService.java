@@ -13,6 +13,8 @@ import com.example.test.school.repository.SchoolRepository;
 import com.example.test.ranking.dto.SchoolRankingResponse;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
+import com.example.test.school.dto.SchoolParticipantRankingListResponse;
+import com.example.test.school.dto.SchoolParticipantRankingResponse;
 
 
 import java.util.ArrayList;
@@ -100,6 +102,46 @@ public class RankingService {
 
         return new SchoolRankingResponse(
                 school.getName(),
+                participantCount,
+                rankings
+        );
+    }
+
+    public SchoolParticipantRankingListResponse getSchoolParticipantRanking(int limit) {
+
+        long participantCount = testHistoryRepository.count();
+
+        List<Object[]> rankingData = testHistoryRepository.findSchoolParticipantRanking();
+        List<SchoolParticipantRankingResponse> rankings = new ArrayList<>();
+
+        int rank = 1;
+
+        for (Object[] row : rankingData) {
+
+            if (rank > limit) {
+                break;
+            }
+
+            Long schoolId = ((Number) row[0]).longValue();
+            long count = ((Number) row[1]).longValue();
+
+            School school = schoolRepository.findById(schoolId)
+                    .orElseThrow(() -> new IllegalArgumentException("학교를 찾을 수 없습니다."));
+
+            double percent = participantCount == 0
+                    ? 0
+                    : count * 100.0 / participantCount;
+
+            rankings.add(new SchoolParticipantRankingResponse(
+                    rank++,
+                    school.getId(),
+                    school.getName(),
+                    count,
+                    Math.round(percent * 10) / 10.0
+            ));
+        }
+
+        return new SchoolParticipantRankingListResponse(
                 participantCount,
                 rankings
         );
