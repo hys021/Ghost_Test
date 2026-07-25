@@ -42,4 +42,7 @@ public class Ghost {
 
     @Column(name = "worst_match_comment", length = 255)
     private String worstMatchComment;
+
+    @Column(name = "ai_story", columnDefinition = "TEXT")
+    private String aiStory;
 }

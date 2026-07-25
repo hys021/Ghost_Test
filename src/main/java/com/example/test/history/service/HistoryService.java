@@ -118,7 +118,7 @@ public class HistoryService {
                 .ghostName(ghost.getName())
                 .description(ghost.getDescription())
                 .imageUrl(ghost.getImageUrl())
-                .aiStory("밤마다 " + schoolName + " 주변을 떠도는 " + ghost.getName() + "의 비밀 이야기...")
+                .aiStory(ghost.getAiStory())
                 .bestMatch(bestMatchInfo)
                 .worstMatch(worstMatchInfo)
                 .createdAt(history.getCreatedAt() != null ? history.getCreatedAt() : LocalDateTime.now())
