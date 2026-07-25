@@ -80,7 +80,7 @@ public class HistoryService {
 
         // 1. School 정보 동적 조회 및 0번/Null 예외 방어
         String schoolName = "선택 안 함";
-        if (history.getSchoolId() != null && history.getSchoolId() != 0) {
+        if (history.getSchoolId() != null) {
             schoolName = schoolRepository.findById(history.getSchoolId())
                     .map(School::getName)
                     .orElse("알 수 없는 학교");
