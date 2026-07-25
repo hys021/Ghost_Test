@@ -7,6 +7,7 @@ import com.example.test.story.entity.Choice;
 import com.example.test.story.repository.ChoiceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import com.example.test.story.repository.QuestionRepository;
 
 import java.util.List;
 
@@ -16,6 +17,7 @@ public class ResultCalculationService {
 
     private final ChoiceRepository choiceRepository;
     private final GhostRepository ghostRepository;
+    private final QuestionRepository questionRepository;
 
     /**
      * 유저가 선택한 choiceId 리스트를 받아 MBTI를 계산하고,
@@ -26,10 +28,23 @@ public class ResultCalculationService {
      */
     public ResultDto calculate(List<Long> choiceIds) {
 
+        if (choiceIds == null || choiceIds.isEmpty()) {
+            throw new IllegalArgumentException("선택한 답변이 없습니다.");
+        }
+
+        long questionCount = questionRepository.findAllByOrderBySequenceAsc().size();
+
+        if (choiceIds.size() != questionCount) {
+            throw new IllegalArgumentException("모든 질문에 대한 답변이 필요합니다.");
+        }
+
         int ei = 0, ns = 0, tf = 0, jp = 0;
 
-        // 1. 선택한 choice들을 전부 조회해서 점수 합산
         List<Choice> choices = choiceRepository.findAllById(choiceIds);
+
+        if (choices.size() != choiceIds.size()) {
+            throw new IllegalArgumentException("존재하지 않는 선택지가 포함되어 있습니다.");
+        }
 
         for (Choice choice : choices) {
             ei += choice.getEiScore();
