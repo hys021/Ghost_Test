@@ -28,7 +28,17 @@ public class HistoryController {
     }
 
     /**
-     * 2. 테스트 결과 상세 조회 (결과창 및 공유 링크 공용)
+     * 전체 참여자 수 조회
+     * GET /api/v1/histories/count
+     */
+    @GetMapping("/count")
+    public ResponseEntity<ParticipantCountResponse> getParticipantCount() {
+        ParticipantCountResponse response = historyService.getParticipantCount();
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 테스트 결과 상세 조회 (결과창 및 공유 링크 공용)
      * Method / URL: GET /api/v1/histories/{id}
      */
     @GetMapping("/{id}")
