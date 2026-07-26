@@ -26,4 +26,13 @@ public interface TestHistoryRepository extends JpaRepository<TestHistory, Long> 
     List<Object[]> findSchoolRanking(Long schoolId);
 
     long countBySchoolId(Long schoolId);
+
+    @Query("""
+    SELECT t.schoolId, COUNT(t)
+    FROM TestHistory t
+    WHERE t.schoolId IS NOT NULL
+    GROUP BY t.schoolId
+    ORDER BY COUNT(t) DESC
+    """)
+    List<Object[]> findSchoolParticipantRanking();
 }

@@ -6,11 +6,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import com.example.test.ranking.dto.RankingListResponse;
 import com.example.test.ranking.service.RankingService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import com.example.test.ranking.dto.SchoolRankingResponse;
+import com.example.test.school.dto.SchoolParticipantRankingListResponse;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -35,5 +35,12 @@ public class SchoolController {
             @PathVariable Long schoolId) {
 
         return ResponseEntity.ok(rankingService.getSchoolRanking(schoolId));
+    }
+
+    @GetMapping("/schools/rankings")
+    public ResponseEntity<SchoolParticipantRankingListResponse> getSchoolParticipantRanking(
+            @RequestParam(defaultValue = "3") int limit) {
+
+        return ResponseEntity.ok(rankingService.getSchoolParticipantRanking(limit));
     }
 }
